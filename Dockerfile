@@ -18,6 +18,9 @@ RUN npm run build
 # Production environment
 FROM nginx:alpine
 
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy built assets from builder
 COPY --from=build /app/dist /usr/share/nginx/html
 
