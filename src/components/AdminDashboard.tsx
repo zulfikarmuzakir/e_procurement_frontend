@@ -7,6 +7,7 @@ import Unauthorized from "./Unauthorized";
 
 const AdminDashboard: React.FC = () => {
   const [vendors, setVendors] = useState<User[]>([]);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const { user, token } = useContext(AuthContext);
 
   if (user?.role !== "admin") {
@@ -28,6 +29,7 @@ const AdminDashboard: React.FC = () => {
       setVendors(response.data);
     } catch (error) {
       console.error("Error fetching vendors:", error);
+      setMessage({ type: 'error', text: 'Failed to fetch vendors. Please try again.' });
     }
   };
 
@@ -41,19 +43,27 @@ const AdminDashboard: React.FC = () => {
         }
       );
       fetchVendors();
+      setMessage({ type: 'success', text: 'Vendor approved successfully.' });
     } catch (error) {
-      console.error('Error approving vendor:', error);
+      console.error("Error approving vendor:", error);
+      setMessage({ type: 'error', text: 'Failed to approve vendor. Please try again.' });
     }
   };
 
   const handleReject = async (id: number): Promise<void> => {
     try {
-      await axios.put(`http://localhost:8080/api/v1/users/${id}/reject`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `http://localhost:8080/api/v1/users/${id}/reject`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       fetchVendors();
+      setMessage({ type: 'success', text: 'Vendor rejected successfully.' });
     } catch (error) {
-      console.error('Error rejecting vendor:', error);
+      console.error("Error rejecting vendor:", error);
+      setMessage({ type: 'error', text: 'Failed to reject vendor. Please try again.' });
     }
   };
 
@@ -63,24 +73,35 @@ const AdminDashboard: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchVendors();
+      setMessage({ type: 'success', text: 'User deleted successfully.' });
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
+      setMessage({ type: 'error', text: 'Failed to delete user. Please try again.' });
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
+      {message && (
+        <div className={`mb-4 p-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {message.text}
+        </div>
+      )}
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Vendor Management</h3>
+          <h3 className="text-lg leading-6 font-medium text-gray-900">
+            Vendor Management
+          </h3>
         </div>
         <div className="border-t border-gray-200">
           <ul className="divide-y divide-gray-200">
             {vendors.map((vendor) => (
               <li key={vendor.id} className="px-4 py-4 sm:px-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium text-gray-900">{vendor.name}</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {vendor.name}
+                  </div>
                   <div className="text-sm text-gray-500">{vendor.status}</div>
                 </div>
                 <div className="mt-2 flex space-x-2">

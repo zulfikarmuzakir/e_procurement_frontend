@@ -9,6 +9,7 @@ const Login: React.FC = () => {
     username: "",
     password: "",
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { user, login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -26,6 +27,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null);
     try {
       const response = await axios.post(
         "http://localhost:8080/api/v1/login",
@@ -39,8 +41,10 @@ const Login: React.FC = () => {
       );
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(error.response.data.message || "An error occurred during login.");
         console.error("Login error:", error.response.data);
       } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
         console.error("An unexpected error occurred:", error);
       }
     }
@@ -48,6 +52,11 @@ const Login: React.FC = () => {
   return (
     <div className="max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span className="block sm:inline">{errorMessage}</span>
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"

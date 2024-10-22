@@ -7,6 +7,7 @@ import { AuthContext } from "../contexts/AuthContext";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState<UserRegister>(UserRegisterInitial);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -25,6 +26,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    setErrorMessage(null);
     try {
       const response = await axios.post(
         "http://localhost:8080/api/v1/register-vendor",
@@ -35,8 +37,10 @@ const Register: React.FC = () => {
       navigate("/login");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(error.response.data.message || "Registration failed. Please try again.");
         console.error("Registration error:", error.response.data);
       } else {
+        setErrorMessage("An unexpected error occurred. Please try again later.");
         console.error("An unexpected error occurred:", error);
       }
     }
@@ -45,6 +49,11 @@ const Register: React.FC = () => {
   return (
     <div className="max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-6">Register as Vendor</h2>
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span className="block sm:inline">{errorMessage}</span>
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"

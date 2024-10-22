@@ -31,7 +31,7 @@ function ProductList() {
       <h2 className="text-3xl font-bold mb-6">All Products</h2>
       <input
         type="text"
-        placeholder="Search products..."
+        placeholder="Search products by name..."
         value={searchTerm}
         onChange={handleSearch}
         className="w-full p-2 mb-4 border border-gray-300 rounded"

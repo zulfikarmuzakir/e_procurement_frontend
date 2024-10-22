@@ -10,6 +10,7 @@ const VendorDashboard: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const { token, user } = useContext(AuthContext);
 
   if (user?.role !== "vendor") {
@@ -32,6 +33,7 @@ const VendorDashboard: React.FC = () => {
       setProducts(response.data.data);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setMessage({ type: 'error', text: 'Failed to fetch products. Please try again.' });
     }
   };
 
@@ -66,8 +68,10 @@ const VendorDashboard: React.FC = () => {
       setNewProduct(ProductInitial);
       setIsCreateModalOpen(false);
       fetchProducts();
+      setMessage({ type: 'success', text: 'Product created successfully.' });
     } catch (error) {
       console.error("Error creating product:", error);
+      setMessage({ type: 'error', text: 'Failed to create product. Please try again.' });
     }
   };
 
@@ -87,8 +91,10 @@ const VendorDashboard: React.FC = () => {
       setIsEditModalOpen(false);
       setEditingProduct(null);
       fetchProducts();
+      setMessage({ type: 'success', text: 'Product updated successfully.' });
     } catch (error) {
       console.error("Error updating product:", error);
+      setMessage({ type: 'error', text: 'Failed to update product. Please try again.' });
     }
   };
 
@@ -98,8 +104,10 @@ const VendorDashboard: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchProducts();
+      setMessage({ type: 'success', text: 'Product deleted successfully.' });
     } catch (error) {
       console.error("Error deleting product:", error);
+      setMessage({ type: 'error', text: 'Failed to delete product. Please try again.' });
     }
   };
 
@@ -115,6 +123,11 @@ const VendorDashboard: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-6">Vendor Dashboard</h2>
+      {message && (
+        <div className={`mb-4 p-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {message.text}
+        </div>
+      )}
       <button
         onClick={openCreateModal}
         className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4"
