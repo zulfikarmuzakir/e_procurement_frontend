@@ -52,6 +52,10 @@ const Login: React.FC = () => {
   return (
     <div className="max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+      <p className="text-sm text-gray-600 mb-4 text-center">
+        Default email: admin@example.com<br />
+        Password: password
+      </p>
       {errorMessage && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <span className="block sm:inline">{errorMessage}</span>
